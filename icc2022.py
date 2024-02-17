@@ -44,6 +44,14 @@ def start(cookie):
                 success = True
             elif "这是您的第" in rsp_text:
                 msg += '签到成功!\n'
+                # 定义正则表达式模式
+                pattern = r'这是您的第 <b>(\d+)</b>[\s\S]*?今日签到排名：<b>(\d+)</b>'
+                # 使用正则表达式进行匹配
+                result = re.search(pattern, rsp_text)
+                # 剔除多余字符
+                result.replace("<b>", "")
+                result.replace("点击白色背景的圆点进行补签。", "")
+                msg += result
                 success = True
             elif "https://www.gov.cn/" in rsp_text:
                 msg += "Cookie值错误!响应跳转到第三方网站,请检查网站cookie值"
