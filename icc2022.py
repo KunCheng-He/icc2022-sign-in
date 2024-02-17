@@ -49,8 +49,8 @@ def start(cookie):
                 # 使用正则表达式进行匹配
                 result = re.search(pattern, rsp_text)
                 # 剔除多余字符
-                result.replace("<b>", "")
-                result.replace("点击白色背景的圆点进行补签。", "")
+                result = result.replace("<b>", "")
+                result = result.replace("点击白色背景的圆点进行补签。", "")
                 msg += result
                 success = True
             elif "https://www.gov.cn/" in rsp_text:
