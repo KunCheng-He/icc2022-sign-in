@@ -46,9 +46,12 @@ def start(cookie):
                 pattern = r'这是您的第 <b>(\d+)</b>[\s\S]*?今日签到排名：<b>(\d+)</b>'
                 # 使用正则表达式进行匹配
                 result = re.search(pattern, rsp_text)
+                result = result.group()
                 # 剔除多余字符
                 result = result.replace("<b>", "")
+                result = result.replace("</b>", "")
                 result = result.replace("点击白色背景的圆点进行补签。", "")
+                result = result.replace('<span style="float:right">', "")
                 msg += result
                 success = True
             elif "https://www.gov.cn/" in rsp_text:
