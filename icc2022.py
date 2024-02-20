@@ -5,7 +5,8 @@ new Env('ICC2022');
 """
 
 import json
-from sendNotify import send
+# from sendNotify import send  # 调试
+from notify import send  # 导入青龙后自动有这个文件
 import requests
 import re
 import os
@@ -39,10 +40,7 @@ def start(cookie):
             
             rsp_text = rsp.text
             success = False
-            if "签到已得" in rsp_text:
-                msg += '已经签到过了，不再重复签到!\n'
-                success = True
-            elif "这是您的第" in rsp_text:
+            if "这是您的第" in rsp_text:
                 msg += '签到成功!\n'
                 # 定义正则表达式模式
                 pattern = r'这是您的第 <b>(\d+)</b>[\s\S]*?今日签到排名：<b>(\d+)</b>'
