@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-cron: 2 0 0 * * *
+cron: 0 9 0 * * *
 new Env('ICC2022');
 """
 
@@ -42,9 +42,11 @@ def start(cookie):
             success = False
             if "这是您的第" in rsp_text:
                 msg += '签到成功!\n'
-                # 定义正则表达式模式
+                # 先匹配当前魔力值信息
+                magic_value = re.search(r'魔力值 :[0-9,\.]+', rsp_text).group()
+                msg = msg + "当前" + magic_value + " 。"
+                # 匹配当前签到提示
                 pattern = r'这是您的第 <b>(\d+)</b>[\s\S]*?今日签到排名：<b>(\d+)</b>'
-                # 使用正则表达式进行匹配
                 result = re.search(pattern, rsp_text)
                 result = result.group()
                 # 剔除多余字符
