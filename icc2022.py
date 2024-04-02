@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-cron: 0 9 0 * * *
+cron: 0 10 0 * * *
 new Env('ICC2022');
 """
 
@@ -15,7 +15,7 @@ import time
 requests.packages.urllib3.disable_warnings()
 
 def start(cookie):
-    max_retries = 20
+    max_retries = 3
     retries = 0
     msg = ""
     while retries < max_retries:
@@ -27,13 +27,16 @@ def start(cookie):
                 'authority': 'www.icc2022.com',
                 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
                 'accept-language': 'zh-CN,zh;q=0.9,und;q=0.8',
-                'referer': 'https://www.icc2022.com/',
-                'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                'referer': 'https://www.icc2022.com/attendance.php',
+                'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
                 'sec-fetch-dest': 'document',
                 'sec-fetch-mode': 'navigate',
                 'sec-fetch-site': 'same-origin',
+                "sec-fetch-user": '?1',
+                "sec-gpc": '1',
+                "upgrade-insecure-requests": '1',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             }
             rsp = requests.get(url=sign_in_url, headers=headers, timeout=15, verify=False)
@@ -43,8 +46,8 @@ def start(cookie):
             if "这是您的第" in rsp_text:
                 msg += '签到成功!\n'
                 # 先匹配当前魔力值信息
-                magic_value = re.search(r'魔力值 :[0-9,\.]+', rsp_text).group()
-                msg = msg + "当前" + magic_value + " 。"
+                magic_value = re.search(r"魔力值.*?(\d+(\,\d+)?(\.\d+)?)", rsp_text).group(1).replace(',', '')
+                msg = msg + "当前魔力值为: " + magic_value + " 。"
                 # 匹配当前签到提示
                 pattern = r'这是您的第 <b>(\d+)</b>[\s\S]*?今日签到排名：<b>(\d+)</b>'
                 result = re.search(pattern, rsp_text)
