@@ -19,7 +19,7 @@ def start(cookie, proxy):
     # 基础变量
     max_retries = 3
     retries = 0
-    msg = ""
+    msg = "\n"
 
     # 处理代理
     useProxy = False
