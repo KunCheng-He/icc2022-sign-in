@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 cron: 0 10 0 * * *
-new Env('ICC2022');
+new Env('ICC2022_COOKIE');
+new Env('ICC2022_PROXY');
 """
 
 import json
@@ -14,10 +15,30 @@ import sys
 import time
 requests.packages.urllib3.disable_warnings()
 
-def start(cookie):
+def start(cookie, proxy):
+    # 基础变量
     max_retries = 3
     retries = 0
     msg = ""
+
+    # 处理代理
+    useProxy = False
+    if proxy == "":
+        print("未设置代理")
+        msg += "--- 未设置代理 ---\n"
+    elif not re.match(r'^http://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$', proxy):
+        print("代理环境变量格式不正确，仅支持 http://address:port 格式")
+        msg += "--- 代理格式不正确，仅支持 http://address:port 格式 ---\n"
+    else:
+        print("已设置代理")
+        proxies = {
+            'http': proxy,
+            'https': proxy
+        }
+        msg += "--- 使用代理: {} ---\n".format(proxy)
+        useProxy = True
+
+    # 正式请求
     while retries < max_retries:
         try:
             msg += "第{}次执行签到\n".format(str(retries+1))
@@ -27,8 +48,8 @@ def start(cookie):
                 'authority': 'www.icc2022.com',
                 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
                 'accept-language': 'zh-CN,zh;q=0.9,und;q=0.8',
-                'referer': 'https://www.icc2022.com/attendance.php',
-                'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                'referer': 'https://www.icc2022.com/',
+                'sec-ch-ua': '"Chromium";v="130", "Google Chrome";v="130", "Not?A_Brand";v="99"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
                 'sec-fetch-dest': 'document',
@@ -37,9 +58,10 @@ def start(cookie):
                 "sec-fetch-user": '?1',
                 "sec-gpc": '1',
                 "upgrade-insecure-requests": '1',
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
             }
-            rsp = requests.get(url=sign_in_url, headers=headers, timeout=15, verify=False)
+
+            rsp = requests.get(url=sign_in_url, headers=headers, timeout=15, verify=False, proxies=proxies if useProxy else None)
             
             rsp_text = rsp.text
             success = False
@@ -92,4 +114,5 @@ def start(cookie):
 
 if __name__ == "__main__":
     cookie = os.getenv("ICC2022_COOKIE")
-    start(cookie)
+    proxy = os.getenv("ICC2022_PROXY")
+    start(cookie, proxy)
