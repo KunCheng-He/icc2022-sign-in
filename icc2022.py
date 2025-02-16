@@ -23,14 +23,14 @@ def start(cookie, proxy):
 
     # 处理代理
     useProxy = False
-    if proxy == "":
+    if proxy == "" or proxy == 'null':
         print("未设置代理")
         msg += "--- 未设置代理 ---\n"
     elif not re.match(r'^http://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$', proxy):
         print("代理环境变量格式不正确，仅支持 http://address:port 格式")
         msg += "--- 代理格式不正确，仅支持 http://address:port 格式 ---\n"
     else:
-        print("已设置代理")
+        print("已设置代理: " + proxy)
         proxies = {
             'http': proxy,
             'https': proxy
